@@ -246,7 +246,7 @@ export default function TaskPanelDemo() {
         zIndex: 10,
       }}>
         <a
-          href="https://github.com"
+          href="https://github.com/dashrobotco/robot-components"
           target="_blank"
           rel="noopener noreferrer"
           style={{
