@@ -189,8 +189,8 @@ export default function TaskPanelDemo() {
           ref={containerRef}
           style={{
             position: 'fixed',
-            top: 24,
-            right: 24,
+            top: 32,
+            right: 32,
             width: 300,
             zIndex: 9999,
           }}
@@ -200,16 +200,16 @@ export default function TaskPanelDemo() {
       {/* Title */}
       <div style={{
         position: 'fixed',
-        bottom: 24,
-        left: 24,
+        bottom: 32,
+        left: 32,
         maxWidth: 320,
         zIndex: 10,
       }}>
         <h1 style={{ fontSize: 19, fontWeight: 600, color: 'rgba(255,255,255,0.8)' }}>
           Task Panel
         </h1>
-        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', marginTop: 2, lineHeight: 1.5 }}>
-          Drag and throw the panel. Part of the<br />Robot Design System.
+        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', marginTop: 6, lineHeight: 1.57 }}>
+          A floating task queue for async jobs. Shows progress, completion status, and file sizes. Fully draggable with physics and boundaries.
         </p>
         {tasks.length === 0 && (
           <button
@@ -242,7 +242,7 @@ export default function TaskPanelDemo() {
       {/* GitHub - bottom right on desktop, top right on mobile */}
       <div style={{
         position: 'fixed',
-        ...(isMobile ? { top: 24, right: 24 } : { bottom: 24, right: 24 }),
+        ...(isMobile ? { top: 32, right: 32 } : { bottom: 32, right: 32 }),
         zIndex: 10,
       }}>
         <a
