@@ -23,10 +23,12 @@ export function TaskPanel({
   // Create sound effects instance
   const panelSoundsRef = useRef<PanelSoundEffects | null>(null);
 
+  // Use fixed initial position to avoid hydration mismatch, then center on mount
   const [position, setPosition] = useState(() => ({
-    x: typeof window !== 'undefined' ? window.innerWidth / 2 - config.panelWidth / 2 : 400,
-    y: typeof window !== 'undefined' ? window.innerHeight / 2 - HEADER_HEIGHT / 2 : 300,
+    x: 400,
+    y: 300,
   }));
+  const [hasMounted, setHasMounted] = useState(false);
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -67,6 +69,15 @@ export function TaskPanel({
     panelSoundsRef.current = new PanelSoundEffects(soundUrl);
     panelSoundsRef.current.initialize();
   }, [soundUrl]);
+
+  // Center panel on mount (client-side only)
+  useEffect(() => {
+    setHasMounted(true);
+    setPosition({
+      x: window.innerWidth / 2 - config.panelWidth / 2,
+      y: window.innerHeight / 2 - HEADER_HEIGHT / 2,
+    });
+  }, [config.panelWidth]);
 
   // Get viewport bounds
   const getViewportBounds = useCallback((scale: number, panelWidth: number, panelHeight: number) => {

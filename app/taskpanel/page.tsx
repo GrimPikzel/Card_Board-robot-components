@@ -1,31 +1,28 @@
 'use client';
 
-import { useState } from 'react';
-import { TaskPanel, TaskItem } from '../../src/taskpanel';
+import { useState, useEffect, useRef } from 'react';
+import { Pane } from 'tweakpane';
+import { TaskPanel, TaskItem, TaskPanelConfig, TaskPanelDefaultConfig } from '../../src/taskpanel';
 
-// Generate demo tasks
-const generateDemoTasks = (): TaskItem[] => {
-  const names = [
-    'cosmic-nebula',
-    'azure-crystal',
-    'midnight-bloom',
-    'solar-flare',
-    'ocean-depths',
-    'aurora-burst',
-    'velvet-storm',
-    'golden-hour',
-  ];
-
-  return names.map((name, i) => ({
-    id: `task-${i}`,
-    name,
-    status: i < 2 ? 'processing' : 'completed',
-    size: `${(Math.random() * 50 + 1).toFixed(1)} MB`,
-  }));
-};
+// Demo tasks with fixed sizes (no Math.random to avoid hydration mismatch)
+const DEMO_TASKS: TaskItem[] = [
+  { id: 'task-0', name: 'cosmic-nebula', status: 'processing' },
+  { id: 'task-1', name: 'azure-crystal', status: 'processing' },
+  { id: 'task-2', name: 'midnight-bloom', status: 'completed', size: '12.4 MB' },
+  { id: 'task-3', name: 'solar-flare', status: 'completed', size: '8.7 MB' },
+  { id: 'task-4', name: 'ocean-depths', status: 'completed', size: '23.1 MB' },
+  { id: 'task-5', name: 'aurora-burst', status: 'completed', size: '15.9 MB' },
+  { id: 'task-6', name: 'velvet-storm', status: 'completed', size: '31.2 MB' },
+  { id: 'task-7', name: 'golden-hour', status: 'completed', size: '19.5 MB' },
+];
 
 export default function TaskPanelDemo() {
-  const [tasks, setTasks] = useState<TaskItem[]>(generateDemoTasks);
+  const [tasks, setTasks] = useState<TaskItem[]>(DEMO_TASKS);
+  const [config, setConfig] = useState<TaskPanelConfig>({ ...TaskPanelDefaultConfig });
+  const [isMobile, setIsMobile] = useState(false);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const paneRef = useRef<Pane | null>(null);
 
   const handleTaskClear = (taskId: string) => {
     setTasks(prev => prev.filter(t => t.id !== taskId));
@@ -35,6 +32,122 @@ export default function TaskPanelDemo() {
     setTasks([]);
   };
 
+  const handleResetTasks = () => {
+    setTasks(DEMO_TASKS);
+  };
+
+  // Detect mobile
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Initialize Tweakpane
+  useEffect(() => {
+    if (isMobile || !containerRef.current) return;
+
+    const params = { ...TaskPanelDefaultConfig };
+
+    const pane = new Pane({
+      container: containerRef.current,
+      title: 'Task Panel Controls',
+    });
+
+    // Physics folder
+    const physicsFolder = pane.addFolder({ title: 'Physics', expanded: false });
+    physicsFolder.addBinding(params, 'maxVelocity', { min: 10, max: 80, step: 1, label: 'Max Velocity' });
+    physicsFolder.addBinding(params, 'baseFriction', { min: 0.9, max: 0.999, step: 0.001, label: 'Base Friction' });
+    physicsFolder.addBinding(params, 'highSpeedFriction', { min: 0.8, max: 0.99, step: 0.01, label: 'High Speed Friction' });
+    physicsFolder.addBinding(params, 'bounceDamping', { min: 0.1, max: 0.9, step: 0.05, label: 'Bounce Damping' });
+    physicsFolder.addBinding(params, 'bounceFrictionBoost', { min: 0.5, max: 1, step: 0.05, label: 'Bounce Friction' });
+    physicsFolder.addBinding(params, 'minVelocity', { min: 0.05, max: 1, step: 0.05, label: 'Min Velocity' });
+    physicsFolder.addBinding(params, 'momentumThreshold', { min: 0.5, max: 5, step: 0.1, label: 'Momentum Threshold' });
+    physicsFolder.addBinding(params, 'velocitySampleCount', { min: 2, max: 12, step: 1, label: 'Velocity Samples' });
+
+    // Visual folder
+    const visualFolder = pane.addFolder({ title: 'Visual', expanded: false });
+    visualFolder.addBinding(params, 'boundaryMargin', { min: 0, max: 50, step: 1, label: 'Boundary Margin' });
+    visualFolder.addBinding(params, 'dragScale', { min: 1, max: 1.1, step: 0.002, label: 'Drag Scale' });
+    visualFolder.addBinding(params, 'panelWidth', { min: 280, max: 320, step: 10, label: 'Panel Width' });
+
+    // Shadow folder
+    const shadowFolder = pane.addFolder({ title: 'Shadows', expanded: false });
+    shadowFolder.addBinding(params, 'idleShadowY', { min: 0, max: 60, step: 1, label: 'Idle Y Offset' });
+    shadowFolder.addBinding(params, 'idleShadowBlur', { min: 0, max: 80, step: 1, label: 'Idle Blur' });
+    shadowFolder.addBinding(params, 'idleShadowSpread', { min: -20, max: 20, step: 1, label: 'Idle Spread' });
+    shadowFolder.addBinding(params, 'idleShadowOpacity', { min: 0, max: 1, step: 0.05, label: 'Idle Opacity' });
+    shadowFolder.addBinding(params, 'dragShadowY', { min: 0, max: 80, step: 1, label: 'Drag Y Offset' });
+    shadowFolder.addBinding(params, 'dragShadowBlur', { min: 0, max: 100, step: 1, label: 'Drag Blur' });
+    shadowFolder.addBinding(params, 'dragShadowSpread', { min: -20, max: 20, step: 1, label: 'Drag Spread' });
+    shadowFolder.addBinding(params, 'dragShadowOpacity', { min: 0, max: 1, step: 0.05, label: 'Drag Opacity' });
+
+    // Sound folder
+    const soundFolder = pane.addFolder({ title: 'Sound', expanded: false });
+    soundFolder.addBinding(params, 'soundEnabled', { label: 'Enabled' });
+    soundFolder.addBinding(params, 'soundMinVolume', { min: 0, max: 0.1, step: 0.005, label: 'Min Volume' });
+    soundFolder.addBinding(params, 'soundMaxVolume', { min: 0.05, max: 0.5, step: 0.01, label: 'Max Volume' });
+
+    // Listen for changes
+    pane.on('change', () => {
+      setConfig({ ...params });
+    });
+
+    // Presets folder
+    const presetsFolder = pane.addFolder({ title: 'Presets', expanded: false });
+
+    presetsFolder.addButton({ title: 'Reset to Default' }).on('click', () => {
+      Object.assign(params, TaskPanelDefaultConfig);
+      pane.refresh();
+      setConfig({ ...params });
+    });
+
+    presetsFolder.addButton({ title: 'Floaty / Low Gravity' }).on('click', () => {
+      Object.assign(params, {
+        ...TaskPanelDefaultConfig,
+        baseFriction: 0.99,
+        highSpeedFriction: 0.97,
+        bounceDamping: 0.7,
+        bounceFrictionBoost: 0.95,
+      });
+      pane.refresh();
+      setConfig({ ...params });
+    });
+
+    presetsFolder.addButton({ title: 'Snappy / High Friction' }).on('click', () => {
+      Object.assign(params, {
+        ...TaskPanelDefaultConfig,
+        baseFriction: 0.92,
+        highSpeedFriction: 0.85,
+        bounceDamping: 0.3,
+        bounceFrictionBoost: 0.6,
+      });
+      pane.refresh();
+      setConfig({ ...params });
+    });
+
+    presetsFolder.addButton({ title: 'Bouncy Ball' }).on('click', () => {
+      Object.assign(params, {
+        ...TaskPanelDefaultConfig,
+        baseFriction: 0.985,
+        highSpeedFriction: 0.96,
+        bounceDamping: 0.75,
+        bounceFrictionBoost: 0.95,
+        maxVelocity: 50,
+      });
+      pane.refresh();
+      setConfig({ ...params });
+    });
+
+    paneRef.current = pane;
+
+    return () => {
+      pane.dispose();
+      paneRef.current = null;
+    };
+  }, [isMobile]);
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -43,6 +156,47 @@ export default function TaskPanelDemo() {
       justifyContent: 'center',
       backgroundColor: '#1C1C1C',
     }}>
+      {/* Tweakpane dark theme styles */}
+      <style>{`
+        :root {
+          --tp-base-background-color: hsla(0, 0%, 17%, 0.80);
+          --tp-base-shadow-color: hsla(0, 0%, 0%, 0.2);
+          --tp-button-background-color: hsla(0, 0%, 80%, 1.00);
+          --tp-button-background-color-active: rgba(166, 166, 166, 1.00);
+          --tp-button-background-color-focus: rgba(179, 179, 179, 1.00);
+          --tp-button-background-color-hover: hsla(0, 0%, 90%, 1.00);
+          --tp-button-foreground-color: hsla(0, 0%, 0%, 0.80);
+          --tp-container-background-color: hsla(0, 0%, 27%, 0.30);
+          --tp-container-background-color-active: hsla(0, 0%, 27%, 0.30);
+          --tp-container-background-color-focus: hsla(0, 0%, 24%, 0.30);
+          --tp-container-background-color-hover: hsla(0, 0%, 24%, 0.30);
+          --tp-container-foreground-color: hsla(0, 0%, 100%, 0.50);
+          --tp-groove-foreground-color: hsla(0, 0%, 0%, 0.20);
+          --tp-input-background-color: hsla(0, 0%, 0%, 0.30);
+          --tp-input-background-color-active: hsla(0, 0%, 15%, 0.30);
+          --tp-input-background-color-focus: hsla(0, 0%, 10%, 0.30);
+          --tp-input-background-color-hover: hsla(0, 0%, 5%, 0.30);
+          --tp-input-foreground-color: hsla(0, 0%, 100%, 0.50);
+          --tp-label-foreground-color: hsla(0, 0%, 100%, 0.50);
+          --tp-monitor-background-color: hsla(0, 0%, 7%, 0.30);
+          --tp-monitor-foreground-color: hsla(0, 0%, 100%, 0.30);
+        }
+      `}</style>
+
+      {/* Tweakpane container - hidden on mobile */}
+      {!isMobile && (
+        <div
+          ref={containerRef}
+          style={{
+            position: 'fixed',
+            top: 24,
+            right: 24,
+            width: 300,
+            zIndex: 9999,
+          }}
+        />
+      )}
+
       {/* Title */}
       <div style={{
         position: 'fixed',
@@ -57,10 +211,40 @@ export default function TaskPanelDemo() {
         <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', marginTop: 2, lineHeight: 1.5 }}>
           Drag and throw the panel. Part of the<br />Robot Design System.
         </p>
+        {tasks.length === 0 && (
+          <button
+            onClick={handleResetTasks}
+            style={{
+              marginTop: 12,
+              padding: '8px 16px',
+              backgroundColor: 'rgba(255,255,255,0.1)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              borderRadius: 8,
+              color: 'rgba(255,255,255,0.6)',
+              fontSize: 13,
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.15)';
+              e.currentTarget.style.color = 'rgba(255,255,255,0.8)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)';
+              e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
+            }}
+          >
+            Reset Tasks
+          </button>
+        )}
       </div>
 
-      {/* GitHub */}
-      <div style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 10 }}>
+      {/* GitHub - bottom right on desktop, top right on mobile */}
+      <div style={{
+        position: 'fixed',
+        ...(isMobile ? { top: 24, right: 24 } : { bottom: 24, right: 24 }),
+        zIndex: 10,
+      }}>
         <a
           href="https://github.com"
           target="_blank"
@@ -86,6 +270,7 @@ export default function TaskPanelDemo() {
       {/* The Task Panel */}
       <TaskPanel
         tasks={tasks}
+        config={config}
         onTaskClear={handleTaskClear}
         onClearAll={handleClearAll}
       />
