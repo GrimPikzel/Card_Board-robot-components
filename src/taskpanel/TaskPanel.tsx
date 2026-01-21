@@ -545,6 +545,10 @@ export function TaskPanel({
           0%, 100% { opacity: 0.2; }
           50% { opacity: 1; }
         }
+        @keyframes taskpanel-spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
         .taskpanel-generating {
           animation: taskpanel-shimmer 2s ease-in-out infinite;
         }
@@ -631,7 +635,7 @@ export function TaskPanel({
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 {activeCount > 0 ? (
-                  <Loader2 size={15} style={{ color: '#2463EB', animation: 'spin 1s linear infinite' }} />
+                  <Loader2 size={15} style={{ color: '#2463EB', animation: 'taskpanel-spin 1s linear infinite' }} />
                 ) : (
                   <CircleCheck size={15} style={{ color: '#4ade80' }} />
                 )}
