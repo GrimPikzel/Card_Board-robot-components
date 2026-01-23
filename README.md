@@ -134,7 +134,7 @@ This repo includes Claude Code skills to help you customize and expand the compo
    claude
    ```
 
-### Available Commands
+### Available Skills
 
 #### `/node-editor-expand`
 

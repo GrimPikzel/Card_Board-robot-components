@@ -45,9 +45,9 @@ Accent colors:
 - **blue-600** (#2563eb) - Processing/active states
 - **green-400** (#4ade80) - Success/completed states
 
-## Available Commands
+## Available Skills
 
-Use `/node-editor-expand <description>` to add features to the Node Editor Canvas.
+Use `/node-editor-expand` to add features to the Node Editor Canvas. Describe what you want after invoking the skill.
 
 Example:
 ```
