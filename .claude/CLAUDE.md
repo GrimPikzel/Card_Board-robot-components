@@ -45,9 +45,14 @@ Accent colors:
 - **blue-600** (#2563eb) - Processing/active states
 - **green-400** (#4ade80) - Success/completed states
 
-## Available Skills
+## Available Commands
 
-Use `/node-editor-expand` when you want to add features to the Node Editor Canvas.
+Use `/node-editor-expand <description>` to add features to the Node Editor Canvas.
+
+Example:
+```
+/node-editor-expand Add a glow effect around panels when they are selected
+```
 
 ## Running the Demo
 
