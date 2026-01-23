@@ -608,10 +608,10 @@ export function TaskPanel({
               height: { type: 'spring', stiffness: 400, damping: 28 },
             }}
             style={{
-              backgroundColor: '#222222',
+              backgroundColor: '#262626', /* neutral-800 */
               boxShadow: IDLE_SHADOW,
               borderRadius: 12,
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              border: '1px solid #404040', /* neutral-700 */
               overflow: 'hidden',
             }}
           >
@@ -625,21 +625,21 @@ export function TaskPanel({
                 justifyContent: 'space-between',
                 padding: '0 16px',
                 height: HEADER_HEIGHT,
-                backgroundColor: '#282828',
+                backgroundColor: '#262626', /* neutral-800 */
                 border: 'none',
                 cursor: 'pointer',
-                transition: 'background-color 0.15s',
+                transition: 'background-color 0.2s ease-out',
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#2e2e2e'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#282828'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(64, 64, 64, 0.3)'; /* neutral-700/30 */ }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#262626'; /* neutral-800 */ }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 {activeCount > 0 ? (
-                  <Loader2 size={15} style={{ color: '#2463EB', animation: 'taskpanel-spin 1s linear infinite' }} />
+                  <Loader2 size={15} style={{ color: '#2563eb', /* blue-600 */ animation: 'taskpanel-spin 1s linear infinite' }} />
                 ) : (
-                  <CircleCheck size={15} style={{ color: '#4ade80' }} />
+                  <CircleCheck size={15} style={{ color: '#4ade80' /* green-400 */ }} />
                 )}
-                <span style={{ fontSize: 13, fontWeight: 500, color: 'rgba(255, 255, 255, 0.8)' }}>
+                <span style={{ fontSize: 13, fontWeight: 500, color: '#e5e5e5' /* neutral-200 */ }}>
                   {getHeaderText()}
                 </span>
               </div>
@@ -655,28 +655,28 @@ export function TaskPanel({
                     fontSize: 11,
                     padding: '4px 8px',
                     borderRadius: 6,
-                    color: 'rgba(255, 255, 255, 0.5)',
+                    color: '#737373', /* neutral-500 */
                     cursor: 'pointer',
                     transition: 'all 0.2s',
                     opacity: isExpanded ? 1 : 0,
                     pointerEvents: isExpanded ? 'auto' : 'none',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-                    e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)';
+                    e.currentTarget.style.backgroundColor = '#404040'; /* neutral-700 */
+                    e.currentTarget.style.color = '#a3a3a3'; /* neutral-400 */
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.backgroundColor = 'transparent';
-                    e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)';
+                    e.currentTarget.style.color = '#737373'; /* neutral-500 */
                   }}
                 >
                   Clear
                 </span>
-                <GripVertical size={14} style={{ color: 'rgba(255, 255, 255, 0.25)' }} />
+                <GripVertical size={14} style={{ color: '#525252' /* neutral-600 */ }} />
                 <ChevronUp
                   size={13}
                   style={{
-                    color: 'rgba(255, 255, 255, 0.3)',
+                    color: '#525252', /* neutral-600 */
                     transition: 'transform 0.3s ease-out',
                     transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
                   }}
@@ -733,7 +733,7 @@ export function TaskPanel({
                               display: 'block',
                               fontSize: 13,
                               fontWeight: 500,
-                              color: '#fff',
+                              color: '#fafafa', /* neutral-50 */
                               maxWidth: 150,
                               overflow: 'hidden',
                               textOverflow: 'ellipsis',
@@ -753,13 +753,13 @@ export function TaskPanel({
                             opacity: 0,
                             transition: 'opacity 0.15s',
                             fontSize: 11,
-                            color: 'rgba(255, 255, 255, 0.4)',
+                            color: '#737373', /* neutral-500 */
                             cursor: 'pointer',
                             flexShrink: 0,
                           }}
                           onMouseEnter={(e) => {
                             e.currentTarget.style.opacity = '1';
-                            e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)';
+                            e.currentTarget.style.color = '#a3a3a3'; /* neutral-400 */
                           }}
                           onMouseLeave={(e) => {
                             e.currentTarget.style.opacity = '0';
@@ -770,14 +770,14 @@ export function TaskPanel({
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         {task.status === 'processing' ? (
-                          <span style={{ fontSize: 11, color: '#888' }}>
+                          <span style={{ fontSize: 11, color: '#737373' /* neutral-500 */ }}>
                             <span className="taskpanel-generating">Generating</span>
                             <span className="taskpanel-ellipsis"><span>.</span><span>.</span><span>.</span></span>
                           </span>
                         ) : (
                           <>
-                            <Check size={11} style={{ flexShrink: 0, color: '#888' }} />
-                            <span style={{ fontSize: 11, color: '#888' }}>
+                            <Check size={11} style={{ flexShrink: 0, color: '#737373' /* neutral-500 */ }} />
+                            <span style={{ fontSize: 11, color: '#737373' /* neutral-500 */ }}>
                               Generated{task.size ? ` • ${task.size}` : ''}
                             </span>
                           </>
@@ -795,7 +795,7 @@ export function TaskPanel({
                   left: 0,
                   right: 0,
                   height: 40,
-                  background: 'linear-gradient(to top, #222222 0%, transparent 100%)',
+                  background: 'linear-gradient(to top, #262626 0%, transparent 100%)', /* neutral-800 */
                   pointerEvents: 'none',
                 }}
               />

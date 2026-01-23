@@ -1,0 +1,13 @@
+/* Override bg-page for this route - using neutral-900 */
+:root {
+  --bg-page: #171717 !important;
+  --grey-5: #171717 !important;
+}
+
+html, body, #app-content {
+  background-color: #171717 !important;
+}
+
+body.page-loading::before {
+  background: #171717 !important;
+}

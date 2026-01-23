@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { Pane } from 'tweakpane';
 import { TaskPanel, TaskItem, TaskPanelConfig, TaskPanelDefaultConfig } from '../../src/taskpanel';
+import { soundEffects } from '../../src/utils/SoundEffects';
 
 // Demo tasks with fixed sizes (no Math.random to avoid hydration mismatch)
 const DEMO_TASKS: TaskItem[] = [
@@ -17,6 +19,7 @@ const DEMO_TASKS: TaskItem[] = [
 ];
 
 export default function TaskPanelDemo() {
+  const router = useRouter();
   const [tasks, setTasks] = useState<TaskItem[]>(DEMO_TASKS);
   const [config, setConfig] = useState<TaskPanelConfig>({ ...TaskPanelDefaultConfig });
   const [isMobile, setIsMobile] = useState(false);
@@ -154,34 +157,69 @@ export default function TaskPanelDemo() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: '#1C1C1C',
+      backgroundColor: '#171717', /* neutral-900 */
     }}>
-      {/* Tweakpane dark theme styles */}
+      {/* Tweakpane dark theme styles - using Tailwind neutral palette */}
       <style>{`
         :root {
-          --tp-base-background-color: hsla(0, 0%, 17%, 0.80);
-          --tp-base-shadow-color: hsla(0, 0%, 0%, 0.2);
-          --tp-button-background-color: hsla(0, 0%, 80%, 1.00);
-          --tp-button-background-color-active: rgba(166, 166, 166, 1.00);
-          --tp-button-background-color-focus: rgba(179, 179, 179, 1.00);
-          --tp-button-background-color-hover: hsla(0, 0%, 90%, 1.00);
-          --tp-button-foreground-color: hsla(0, 0%, 0%, 0.80);
-          --tp-container-background-color: hsla(0, 0%, 27%, 0.30);
-          --tp-container-background-color-active: hsla(0, 0%, 27%, 0.30);
-          --tp-container-background-color-focus: hsla(0, 0%, 24%, 0.30);
-          --tp-container-background-color-hover: hsla(0, 0%, 24%, 0.30);
-          --tp-container-foreground-color: hsla(0, 0%, 100%, 0.50);
-          --tp-groove-foreground-color: hsla(0, 0%, 0%, 0.20);
-          --tp-input-background-color: hsla(0, 0%, 0%, 0.30);
-          --tp-input-background-color-active: hsla(0, 0%, 15%, 0.30);
-          --tp-input-background-color-focus: hsla(0, 0%, 10%, 0.30);
-          --tp-input-background-color-hover: hsla(0, 0%, 5%, 0.30);
-          --tp-input-foreground-color: hsla(0, 0%, 100%, 0.50);
-          --tp-label-foreground-color: hsla(0, 0%, 100%, 0.50);
-          --tp-monitor-background-color: hsla(0, 0%, 7%, 0.30);
-          --tp-monitor-foreground-color: hsla(0, 0%, 100%, 0.30);
+          --tp-base-background-color: rgba(38, 38, 38, 0.80); /* neutral-800 */
+          --tp-base-shadow-color: rgba(10, 10, 10, 0.2); /* neutral-950 */
+          --tp-button-background-color: #d4d4d4; /* neutral-300 */
+          --tp-button-background-color-active: #a3a3a3; /* neutral-400 */
+          --tp-button-background-color-focus: #d4d4d4; /* neutral-300 */
+          --tp-button-background-color-hover: #e5e5e5; /* neutral-200 */
+          --tp-button-foreground-color: rgba(23, 23, 23, 0.80); /* neutral-900 */
+          --tp-container-background-color: rgba(64, 64, 64, 0.30); /* neutral-700 */
+          --tp-container-background-color-active: rgba(64, 64, 64, 0.30); /* neutral-700 */
+          --tp-container-background-color-focus: rgba(82, 82, 82, 0.30); /* neutral-600 */
+          --tp-container-background-color-hover: rgba(82, 82, 82, 0.30); /* neutral-600 */
+          --tp-container-foreground-color: #737373; /* neutral-500 */
+          --tp-groove-foreground-color: rgba(10, 10, 10, 0.20); /* neutral-950 */
+          --tp-input-background-color: rgba(10, 10, 10, 0.30); /* neutral-950 */
+          --tp-input-background-color-active: rgba(23, 23, 23, 0.30); /* neutral-900 */
+          --tp-input-background-color-focus: rgba(23, 23, 23, 0.30); /* neutral-900 */
+          --tp-input-background-color-hover: rgba(23, 23, 23, 0.30); /* neutral-900 */
+          --tp-input-foreground-color: #737373; /* neutral-500 */
+          --tp-label-foreground-color: #737373; /* neutral-500 */
+          --tp-monitor-background-color: rgba(10, 10, 10, 0.30); /* neutral-950 */
+          --tp-monitor-foreground-color: #525252; /* neutral-600 */
         }
       `}</style>
+
+      {/* Robot Logo - Top Left */}
+      <div style={{ position: 'fixed', top: 32, left: 32, zIndex: 10 }}>
+        <button
+          onClick={() => {
+            soundEffects.playQuickStartClick();
+            router.push('/');
+          }}
+          onMouseEnter={() => soundEffects.playHoverSound('logo')}
+          className="btn-skin"
+          style={{
+            width: 44,
+            height: 44,
+            borderRadius: 12,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            border: 'none',
+            boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 0 1px #171717',
+          }}
+        >
+          <span
+            style={{
+              display: 'block',
+              width: 20,
+              height: 20,
+              backgroundImage: 'url(/images/new-robot-logo.svg)',
+              backgroundSize: 'contain',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+            }}
+          />
+        </button>
+      </div>
 
       {/* Tweakpane container - hidden on mobile */}
       {!isMobile && (
@@ -205,10 +243,10 @@ export default function TaskPanelDemo() {
         maxWidth: 320,
         zIndex: 10,
       }}>
-        <h1 style={{ fontSize: 19, fontWeight: 600, color: 'rgba(255,255,255,0.8)' }}>
+        <h1 style={{ fontSize: 19, fontWeight: 600, color: '#e5e5e5' /* neutral-200 */ }}>
           Task Panel
         </h1>
-        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', marginTop: 6, lineHeight: 1.57 }}>
+        <p style={{ fontSize: 14, color: '#737373' /* neutral-500 */, marginTop: 6, lineHeight: 1.57 }}>
           A floating task queue for async jobs. Shows progress, completion status, and file sizes. Fully draggable with physics and boundaries.
         </p>
         {tasks.length === 0 && (
@@ -217,21 +255,21 @@ export default function TaskPanelDemo() {
             style={{
               marginTop: 12,
               padding: '8px 16px',
-              backgroundColor: 'rgba(255,255,255,0.1)',
-              border: '1px solid rgba(255,255,255,0.2)',
+              backgroundColor: '#262626', /* neutral-800 */
+              border: '1px solid #404040', /* neutral-700 */
               borderRadius: 8,
-              color: 'rgba(255,255,255,0.6)',
+              color: '#a3a3a3', /* neutral-400 */
               fontSize: 13,
               cursor: 'pointer',
               transition: 'all 0.2s',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.15)';
-              e.currentTarget.style.color = 'rgba(255,255,255,0.8)';
+              e.currentTarget.style.backgroundColor = '#404040'; /* neutral-700 */
+              e.currentTarget.style.color = '#e5e5e5'; /* neutral-200 */
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)';
-              e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
+              e.currentTarget.style.backgroundColor = '#262626'; /* neutral-800 */
+              e.currentTarget.style.color = '#a3a3a3'; /* neutral-400 */
             }}
           >
             Reset Tasks
@@ -253,12 +291,12 @@ export default function TaskPanelDemo() {
             display: 'flex',
             alignItems: 'center',
             gap: 8,
-            color: 'rgba(255,255,255,0.4)',
+            color: '#737373', /* neutral-500 */
             textDecoration: 'none',
             transition: 'color 0.2s',
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.color = '#e5e5e5'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = '#e5e5e5'; /* neutral-200 */ }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = '#737373'; /* neutral-500 */ }}
         >
           <span style={{ fontSize: 14 }}>View on GitHub</span>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
