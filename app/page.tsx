@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 
 export default function Home() {
@@ -45,7 +47,7 @@ export default function Home() {
             }}
           />
         </div>
-        <h1 style={{ fontSize: 30, fontWeight: 700, marginBottom: 4, color: '#fff' }}>Robot Components</h1>
+        <h1 style={{ fontSize: 26, fontWeight: 500, marginBottom: 0, color: '#fff' }}>Robot Components</h1>
         <p style={{ color: '#737373', fontSize: 14 }}>Component library from the Robot Design System</p>
       </div>
 
@@ -62,13 +64,36 @@ export default function Home() {
               border: '1px solid #333',
               textDecoration: 'none',
               color: '#fff',
+              transition: 'background-color 0.2s ease-out',
             }}
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#2e2e2e'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#262626'; }}
           >
             <div style={{ fontWeight: 600, fontSize: 15 }}>{component.name}</div>
-            <div style={{ fontSize: 14, color: '#777', marginTop: 4 }}>{component.description}</div>
+            <div style={{ fontSize: 14, color: '#777', marginTop: 2 }}>{component.description}</div>
           </Link>
         ))}
       </div>
+
+      {/* Footer */}
+      <p style={{
+        position: 'fixed',
+        bottom: 24,
+        fontSize: 13,
+        color: '#525252', /* neutral-600 */
+      }}>
+        Robot.co is a project by{' '}
+        <a
+          href="https://x.com/creativedash/"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: '#737373', textDecoration: 'none' }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = '#a3a3a3'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = '#737373'; }}
+        >
+          @creativedash
+        </a>
+      </p>
     </div>
   );
 }
