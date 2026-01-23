@@ -45,9 +45,9 @@ Use these colors and add comments:
 
 ## Guidelines
 
-1. **Use inline styles** - Tailwind classes don't work reliably in this codebase, always use inline `style={{}}`
-2. **Add color comments** - When using hex colors, add the Tailwind name as a comment
-3. **Test positioning** - Use `position: 'fixed'` for overlays, verify elements appear on screen
+1. **Use inline styles for layout in nodegrid** - The nodegrid page has issues with some Tailwind layout classes (`fixed`, `min-h-screen`, etc). Use inline `style={{}}` for position, display, and dimensions. Tailwind classes work fine elsewhere.
+2. **Use Tailwind color values** - Always use colors from the neutral palette above with comments (e.g., `color: '#737373' /* neutral-500 */`)
+3. **Test positioning** - Verify new elements appear on screen, especially fixed/absolute positioned ones
 4. **Maintain physics** - If modifying drag behavior, preserve the velocity/friction/bounce system
 5. **Sound feedback** - Add sounds for new interactions using `soundEffects.playHoverSound()` or `playBounceSound()`
 
