@@ -56,4 +56,4 @@ npm install
 npm run dev
 ```
 
-Then visit http://localhost:3002/nodegrid
+Then visit http://localhost:3000/nodegrid

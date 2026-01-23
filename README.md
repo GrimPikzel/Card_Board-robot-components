@@ -92,9 +92,9 @@ npm run dev
 ```
 
 Then visit:
-- http://localhost:3002 - Component overview
-- http://localhost:3002/taskpanel - Task Panel demo
-- http://localhost:3002/nodegrid - Node Editor demo
+- http://localhost:3000 - Component overview
+- http://localhost:3000/taskpanel - Task Panel demo
+- http://localhost:3000/nodegrid - Node Editor demo
 
 ## Peer Dependencies
 
