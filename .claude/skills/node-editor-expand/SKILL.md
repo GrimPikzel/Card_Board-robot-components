@@ -1,6 +1,11 @@
-# Node Editor Expansion Command
+---
+description: Add features to the Node Editor Canvas - visual effects, interactions, physics, keyboard shortcuts
+argument-hint: <describe what you want to add>
+---
 
-You are helping expand the Node Editor Canvas component in this repository. The user wants to add or modify features.
+# Node Editor Expansion
+
+You are helping expand the Node Editor Canvas component. The user wants to add or modify features.
 
 ## User Request
 
@@ -14,9 +19,7 @@ $ARGUMENTS
 
 ## Architecture
 
-The Node Editor has these main parts:
-
-1. **GridPlayground** (line ~3600) - Main orchestrator component
+1. **GridPlayground** (line ~3600) - Main orchestrator
    - State: `floatingPanels`, `connections`, `connectionDrag`, `topPanelId`, `sliceTrail`
 
 2. **FloatingPanel** (line ~850) - Draggable/resizable panels
@@ -31,7 +34,7 @@ The Node Editor has these main parts:
 
 ## Design System (Tailwind neutral palette)
 
-Use these colors and add comments:
+Use these colors with comments:
 - `#fafafa` /* neutral-50 */ - Primary text
 - `#e5e5e5` /* neutral-200 */ - Headings
 - `#a3a3a3` /* neutral-400 */ - Secondary text
@@ -45,17 +48,18 @@ Use these colors and add comments:
 
 ## Guidelines
 
-1. **Use inline styles for layout in nodegrid** - The nodegrid page has issues with some Tailwind layout classes (`fixed`, `min-h-screen`, etc). Use inline `style={{}}` for position, display, and dimensions. Tailwind classes work fine elsewhere.
-2. **Use Tailwind color values** - Always use colors from the neutral palette above with comments (e.g., `color: '#737373' /* neutral-500 */`)
-3. **Test positioning** - Verify new elements appear on screen, especially fixed/absolute positioned ones
-4. **Maintain physics** - If modifying drag behavior, preserve the velocity/friction/bounce system
-5. **Sound feedback** - Add sounds for new interactions using `soundEffects.playHoverSound()` or `playBounceSound()`
+1. **Use inline styles for layout in nodegrid** - The nodegrid page has issues with some Tailwind layout classes (`fixed`, `min-h-screen`). Use inline `style={{}}` for position, display, and dimensions.
+2. **Use Tailwind color values** - Always use colors from the palette above with comments
+3. **Test positioning** - Verify new elements appear on screen
+4. **Maintain physics** - Preserve the velocity/friction/bounce system
+5. **Sound feedback** - Add sounds using `soundEffects.playHoverSound()` or `playBounceSound()`
 
 ## Instructions
 
-1. Read the relevant sections of `app/nodegrid/page.tsx` to understand the current implementation
-2. Implement the user's requested feature
+1. Read the relevant sections of `app/nodegrid/page.tsx`
+2. Implement the requested feature
 3. Follow existing patterns in the codebase
 4. Test that changes don't break existing functionality
+5. Suggest gradual implementation and fine tuning vs. multiple new features at once
 
 Now implement the user's request.
