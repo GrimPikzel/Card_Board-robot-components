@@ -55,8 +55,7 @@ Use these colors and add comments:
 
 1. Read the relevant sections of `app/nodegrid/page.tsx` to understand the current implementation
 2. Implement the user's requested feature
-3. Use inline styles with Tailwind color values
+3. Follow existing patterns in the codebase
 4. Test that changes don't break existing functionality
-5. If adding new state, add it to the GridPlayground component
 
 Now implement the user's request.
