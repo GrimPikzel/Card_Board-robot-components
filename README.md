@@ -117,6 +117,66 @@ npm run dev
 npm run build
 ```
 
+## Extending with Claude Code
+
+This repo includes Claude Code skills to help you customize and expand the components—no coding experience required.
+
+### Setup
+
+1. Install [Claude Code](https://claude.ai/claude-code) if you haven't already
+2. Clone this repository:
+   ```bash
+   git clone https://github.com/dashrobotco/robot-components.git
+   cd robot-components
+   ```
+3. Open Claude Code in the project directory:
+   ```bash
+   claude
+   ```
+
+### Available Skills
+
+#### `/node-editor-expand`
+
+Use this skill to add features to the Node Editor Canvas. Just describe what you want in plain English:
+
+**Adding visual features:**
+```
+"Add a glow effect around panels when selected"
+"Make connection lines animate with a flowing gradient"
+"Add a minimap in the corner"
+```
+
+**Adding interactions:**
+```
+"Add double-click to edit panel content"
+"Let me select multiple panels with a selection box"
+"Add right-click context menu"
+```
+
+**Modifying physics:**
+```
+"Make panels feel heavier when dragging"
+"Add magnetic snapping between panels"
+"Make panels bounce more off edges"
+```
+
+**Adding shortcuts:**
+```
+"Add Cmd+D to duplicate panels"
+"Add Delete key to remove panels"
+"Add arrow keys to nudge by 10px"
+```
+
+### Tips for Best Results
+
+- **Be specific about position**: "Add a button in the top-right corner of each panel"
+- **Describe the interaction**: "Add a color picker on right-click with 6 preset colors"
+- **Reference existing behavior**: "Add wobble animation like the bounce effect"
+- **Mention edge cases**: "Ask for confirmation before deleting connected panels"
+
+See `.claude/skills/node-editor-expand.md` for full documentation.
+
 ## License
 
 MIT
