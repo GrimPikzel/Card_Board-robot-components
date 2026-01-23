@@ -68,12 +68,41 @@ interface TaskItem {
 }
 ```
 
+### Node Editor Canvas
+
+An interactive node editor with draggable panels, connections, and physics.
+
+#### Features
+
+- **Click to spawn** nodes anywhere on the canvas
+- **Drag & throw** panels with momentum and edge bouncing
+- **Connect panels** by dragging from corner handles
+- **Slice connections** by dragging through lines
+- **Resize panels** from edges and corners
+- **Keyboard shortcuts**: Shift for grid snap, Cmd+drag for scale from center
+- **Dynamic dot grid** that responds to panel movement
+- **WebGL noise overlay** for visual texture
+
+### Demo
+
+Run the demo to see both components in action:
+
+```bash
+npm run dev
+```
+
+Then visit:
+- http://localhost:3002 - Component overview
+- http://localhost:3002/taskpanel - Task Panel demo
+- http://localhost:3002/nodegrid - Node Editor demo
+
 ## Peer Dependencies
 
 - `react` >= 18.0.0
 - `react-dom` >= 18.0.0
 - `framer-motion` >= 10.0.0
 - `lucide-react` >= 0.300.0
+- `tailwindcss` >= 4.0.0
 
 ## Development
 
