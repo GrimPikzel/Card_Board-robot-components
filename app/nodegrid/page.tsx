@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import { Loader2, Check, CircleCheck, ChevronUp, ChevronDown, GripVertical, Sparkles } from 'lucide-react';
 import { soundEffects } from '../../src/utils/SoundEffects';
+import { usePanelPersistence } from '../../src/hooks/usePanelPersistence';
 
 // ============================================================================
 // TYPES
@@ -3668,16 +3669,43 @@ export default function GridPlayground() {
   const [panelSize] = useState({ width: 0, height: 0 });
   const [pulses, setPulses] = useState<PulseEvent[]>([]);
   const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
-  const [floatingPanels, setFloatingPanels] = useState<FloatingPanelData[]>([]);
+// Use persistence hook instead of regular useState
+const {
+  panels: floatingPanels,
+  setPanels: setFloatingPanels,
+  connections,
+  setConnections,
+  panelIdCounter: savedPanelIdCounter,
+  setPanelIdCounter: setSavedPanelIdCounter,
+  isLoaded: persistenceLoaded,
+  clearAllData,
+} = usePanelPersistence();
+
   const [canvasResetKey, setCanvasResetKey] = useState(0);
-  const panelIdCounter = useRef(1); // Start at 1 since we have a default panel
+// IMPORTANT: Initialize the counter ref with the saved value ONCE
+const panelIdCounter = useRef(savedPanelIdCounter);
+
   const hasSpawnedDefaultPanel = useRef(false);
   const isDraggingRef = useRef(false); // Track if any panel is being dragged
   const sliceDragRef = useRef<{ startX: number; startY: number; lastX: number; lastY: number; isSlicing: boolean } | null>(null);
   const viewportRef = useRef({ width: typeof window !== 'undefined' ? window.innerWidth : 0, height: typeof window !== 'undefined' ? window.innerHeight : 0 });
-  const [resizeKey, setResizeKey] = useState(0); // Forces panel re-init on resize
+
   const [topPanelId, setTopPanelId] = useState<string | null>(null); // Last dragged panel stays on top
-  const [connections, setConnections] = useState<PanelConnection[]>([]); // Connections between panels
+  
+// Sync the counter: When we increment it, save it
+useEffect(() => {
+  if (panelIdCounter.current !== savedPanelIdCounter) {
+    setSavedPanelIdCounter(panelIdCounter.current);
+  }
+}, [savedPanelIdCounter, setSavedPanelIdCounter]);
+
+// When saved counter changes (on load), update the ref
+useEffect(() => {
+  if (savedPanelIdCounter > panelIdCounter.current) {
+    panelIdCounter.current = savedPanelIdCounter;
+  }
+}, [savedPanelIdCounter]);
+
   const [connectionDrag, setConnectionDrag] = useState<ConnectionDrag | null>(null); // Active connection drag
   const [sliceTrail, setSliceTrail] = useState<SlicePoint[]>([]); // Visual trail for slice gesture
   const [cutConnections, setCutConnections] = useState<CutConnection[]>([]); // Connections being animated after cut
@@ -3694,21 +3722,23 @@ export default function GridPlayground() {
   }, []);
 
   // Clear all panels and connections with animation
-  const clearAll = useCallback(() => {
-    // Mark all panels as exiting to trigger exit animations
-    setFloatingPanels(prev => prev.map(p => ({ ...p, isExiting: true })));
-    // Clear connections immediately
-    setConnections([]);
-    setCutConnections([]);
-    setConnectionDrag(null);
-    setSliceTrail([]);
-    // Remove panels after animation completes and reset canvas
-    setTimeout(() => {
-      setFloatingPanels([]);
-      panelIdCounter.current = 0;
-      setCanvasResetKey(k => k + 1); // Force canvas remount to reset dot positions
-    }, 200);
-  }, []);
+const clearAll = useCallback(() => {
+  // Mark all panels as exiting
+  setFloatingPanels(prev => prev.map(p => ({ ...p, isExiting: true })));
+  
+  // Clear connections immediately
+  setConnections([]);
+  setCutConnections([]);
+  setConnectionDrag(null);
+  setSliceTrail([]);
+  
+  // Remove panels and reset everything after animation
+  setTimeout(() => {
+    clearAllData(); // Use the hook's clear function
+    panelIdCounter.current = 0;
+    setCanvasResetKey(k => k + 1);
+  }, 200);
+}, [clearAllData]); // Add clearAllData to dependencies
 
   // Disable cmd+k and cmd+u shortcuts, handle ESC to clear all
   useEffect(() => {
@@ -3731,23 +3761,29 @@ export default function GridPlayground() {
     return () => window.removeEventListener('keydown', handleKeyDown, true);
   }, [floatingPanels.length, clearAll]);
 
-  // Spawn a default panel on mount
-  useEffect(() => {
-    if (hasSpawnedDefaultPanel.current) return;
-    hasSpawnedDefaultPanel.current = true;
 
-    // Center the panel in the viewport
-    const x = (window.innerWidth - FLOATING_PANEL_SIZE.width) / 2;
-    const y = (window.innerHeight - FLOATING_PANEL_SIZE.height) / 2;
+  // Don't render until persistence is loaded
+useEffect(() => {
+  // Wait for persistence to load
+  if (!persistenceLoaded) return;
+  
+  // Only spawn default panel if no saved panels exist
+  if (hasSpawnedDefaultPanel.current || floatingPanels.length > 0) return;
+  hasSpawnedDefaultPanel.current = true;
 
-    setFloatingPanels([{
-      id: 'floating-panel-0',
-      x,
-      y,
-      width: FLOATING_PANEL_SIZE.width,
-      height: FLOATING_PANEL_SIZE.height,
-    }]);
-  }, []);
+  const x = (window.innerWidth - FLOATING_PANEL_SIZE.width) / 2;
+  const y = (window.innerHeight - FLOATING_PANEL_SIZE.height) / 2;
+
+  setFloatingPanels([{
+    id: 'floating-panel-0',
+    x,
+    y,
+    width: FLOATING_PANEL_SIZE.width,
+    height: FLOATING_PANEL_SIZE.height,
+  }]);
+}, [persistenceLoaded, floatingPanels.length]); // Add dependencies
+
+
 
   // Keep floating panels centered on resize
   useEffect(() => {
@@ -3770,7 +3806,7 @@ export default function GridPlayground() {
       })));
 
       // Force FloatingPanel components to reinitialize with new positions
-      setResizeKey(k => k + 1);
+      /* setResizeKey(k => k + 1); */
 
       viewportRef.current = { width: newWidth, height: newHeight };
     };
@@ -4104,6 +4140,7 @@ export default function GridPlayground() {
     const x = e.clientX - FLOATING_PANEL_SIZE.width / 2;
     const y = e.clientY - FLOATING_PANEL_SIZE.height / 2;
     const id = `floating-panel-${panelIdCounter.current++}`;
+    setSavedPanelIdCounter(panelIdCounter.current); // ADD THIS LINE
 
     setFloatingPanels(prev => [...prev, {
       id,
@@ -4128,6 +4165,7 @@ export default function GridPlayground() {
     const x = touch.clientX - FLOATING_PANEL_SIZE.width / 2;
     const y = touch.clientY - FLOATING_PANEL_SIZE.height / 2;
     const id = `floating-panel-${panelIdCounter.current++}`;
+    setSavedPanelIdCounter(panelIdCounter.current); // ADD THIS LINE
 
     setFloatingPanels(prev => [...prev, {
       id,
@@ -4273,9 +4311,10 @@ export default function GridPlayground() {
       if (existingConnection) {
         targetId = null; // Don't create duplicate connection
       }
-    } else {
+     } else {
       // Dropped on empty space - spawn a new panel and connect to it
       const newPanelId = `floating-panel-${panelIdCounter.current++}`;
+      setSavedPanelIdCounter(panelIdCounter.current); // ADD THIS LINE
       const x = dropX - FLOATING_PANEL_SIZE.width / 2;
       const y = dropY - FLOATING_PANEL_SIZE.height / 2;
 
@@ -4554,9 +4593,9 @@ export default function GridPlayground() {
       </div>
 
       {/* Spawned floating panels */}
-      {floatingPanels.map(panel => (
-        <FloatingPanel
-          key={`${panel.id}-${resizeKey}`}
+{floatingPanels.map(panel => (
+  <FloatingPanel
+    key={panel.id}  // Just use the panel ID - no resizeKey needed!
           id={panel.id}
           initialX={panel.x}
           initialY={panel.y}
