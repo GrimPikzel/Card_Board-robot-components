@@ -8,6 +8,10 @@ export interface PanelData {
   width: number;
   height: number;
   isExiting?: boolean;
+  title?: string;
+  isMinimized?: boolean;
+  type?: string;
+  content?: string;
 }
 
 // Connection structure (matches your PanelConnection)
