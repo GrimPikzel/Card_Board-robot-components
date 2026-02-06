@@ -1,79 +1,128 @@
 import { useState, useEffect, useCallback } from 'react';
 
-// Panel data structure (matches your FloatingPanelData)
+// Define types
 export interface PanelData {
   id: string;
   x: number;
   y: number;
   width: number;
   height: number;
-  isExiting?: boolean;
   title?: string;
   isMinimized?: boolean;
   type?: string;
-  content?: string;
+  content?: any;
+  isExiting?: boolean;
 }
 
-// Connection structure (matches your PanelConnection)
 export interface ConnectionData {
   id: string;
   fromPanelId: string;
   toPanelId: string;
 }
 
-// Combined save data
-interface SaveData {
+export interface PersistenceHook {
   panels: PanelData[];
+  setPanels: React.Dispatch<React.SetStateAction<PanelData[]>>;
   connections: ConnectionData[];
-  panelIdCounter: number; // Save the counter so IDs don't conflict on reload
+  setConnections: React.Dispatch<React.SetStateAction<ConnectionData[]>>;
+  panelIdCounter: number;
+  setPanelIdCounter: React.Dispatch<React.SetStateAction<number>>;
+  isLoaded: boolean;
+  clearAllData: () => void;
 }
 
-export function usePanelPersistence(storageKey: string = 'robot-node-canvas') {
+// Default initial state
+const DEFAULT_PANELS: PanelData[] = [];
+const DEFAULT_CONNECTIONS: ConnectionData[] = [];
+const DEFAULT_ID_COUNTER = 0;
+
+export const usePanelPersistence = (): PersistenceHook => {
   const [panels, setPanels] = useState<PanelData[]>([]);
   const [connections, setConnections] = useState<ConnectionData[]>([]);
-  const [panelIdCounter, setPanelIdCounter] = useState(0);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [panelIdCounter, setPanelIdCounter] = useState<number>(0);
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
-  // Load from localStorage on mount
+  // Load data from localStorage on mount
   useEffect(() => {
-    try {
-      const savedData = localStorage.getItem(storageKey);
-      if (savedData) {
-        const parsed: SaveData = JSON.parse(savedData);
-        setPanels(parsed.panels || []);
-        setConnections(parsed.connections || []);
-        setPanelIdCounter(parsed.panelIdCounter || 0);
+    const loadData = () => {
+      try {
+        const savedPanels = localStorage.getItem('gridPanels');
+        const savedConnections = localStorage.getItem('gridConnections');
+        const savedIdCounter = localStorage.getItem('panelIdCounter');
+        
+        if (savedPanels) {
+          setPanels(JSON.parse(savedPanels));
+        }
+        
+        if (savedConnections) {
+          setConnections(JSON.parse(savedConnections));
+        }
+        
+        if (savedIdCounter) {
+          setPanelIdCounter(parseInt(savedIdCounter, 10));
+        }
+        
+        setIsLoaded(true);
+      } catch (error) {
+        console.error('Failed to load data from localStorage:', error);
+        // Initialize with defaults if loading fails
+        setPanels(DEFAULT_PANELS);
+        setConnections(DEFAULT_CONNECTIONS);
+        setPanelIdCounter(DEFAULT_ID_COUNTER);
+        setIsLoaded(true);
       }
-      setIsLoaded(true);
-    } catch (error) {
-      console.error('Failed to load saved data:', error);
-      setIsLoaded(true);
-    }
-  }, [storageKey]);
+    };
 
-  // Save to localStorage whenever panels or connections change
+    loadData();
+  }, []);
+
+  // Save panels to localStorage whenever they change
   useEffect(() => {
     if (isLoaded) {
       try {
-        const saveData: SaveData = {
-          panels,
-          connections,
-          panelIdCounter,
-        };
-        localStorage.setItem(storageKey, JSON.stringify(saveData));
+        localStorage.setItem('gridPanels', JSON.stringify(panels));
       } catch (error) {
-        console.error('Failed to save data:', error);
+        console.error('Failed to save panels to localStorage:', error);
       }
     }
-  }, [panels, connections, panelIdCounter, storageKey, isLoaded]);
+  }, [panels, isLoaded]);
+
+  // Save connections to localStorage whenever they change
+  useEffect(() => {
+    if (isLoaded) {
+      try {
+        localStorage.setItem('gridConnections', JSON.stringify(connections));
+      } catch (error) {
+        console.error('Failed to save connections to localStorage:', error);
+      }
+    }
+  }, [connections, isLoaded]);
+
+  // Save panel ID counter to localStorage
+  useEffect(() => {
+    if (isLoaded) {
+      try {
+        localStorage.setItem('panelIdCounter', panelIdCounter.toString());
+      } catch (error) {
+        console.error('Failed to save panelIdCounter to localStorage:', error);
+      }
+    }
+  }, [panelIdCounter, isLoaded]);
 
   // Clear all data
   const clearAllData = useCallback(() => {
     setPanels([]);
     setConnections([]);
     setPanelIdCounter(0);
-    localStorage.removeItem(storageKey);
-  }, [storageKey]);
+    
+    try {
+      localStorage.removeItem('gridPanels');
+      localStorage.removeItem('gridConnections');
+      localStorage.removeItem('panelIdCounter');
+    } catch (error) {
+      console.error('Failed to clear data from localStorage:', error);
+    }
+  }, []);
 
   return {
     panels,
@@ -83,6 +132,6 @@ export function usePanelPersistence(storageKey: string = 'robot-node-canvas') {
     panelIdCounter,
     setPanelIdCounter,
     isLoaded,
-    clearAllData,
+    clearAllData
   };
-}
+};
